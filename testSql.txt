@@ -1,0 +1,123 @@
+{
+"help": "Execute SQL queries on the DataStore.\n\n    The datastore_search_sql action allows a user to search data in a resource\n    or connect multiple resources with join expressions. The underlying SQL\n    engine is the\n    `PostgreSQL engine <http://www.postgresql.org/docs/9.1/interactive/sql/.html>`_.\n    There is an enforced timeout on SQL queries to avoid an unintended DOS.\n    DataStore resource that belong to a private CKAN resource cannot be searched with\n    this action. Use :meth:`~ckanext.datastore.logic.action.datastore_search` instead.\n\n    .. note:: This action is only available when using PostgreSQL 9.X and using a read-only user on the database.\n        It is not available in :ref:`legacy mode<legacy-mode>`.\n\n    :param sql: a single SQL select statement\n    :type sql: string\n\n    **Results:**\n\n    The result of this action is a dictionary with the following keys:\n\n    :rtype: A dictionary with the following keys\n    :param fields: fields/columns and their extra metadata\n    :type fields: list of dictionaries\n    :param records: list of matching results\n    :type records: list of dictionaries\n\n    ",
+"success": true,
+"result": {
+"records": [
+{
+"DATE OPENED": "2004-06-24T00:00:00.000",
+"RECORD TYPE GROUP": "Building",
+"RECORD TYPE SUBTYPE": "Commercial",
+"RECORD TYPE CATEGORY": "Remodel",
+"BUSINESS NAME": "CH GENERAL CONTRACTORS INC",
+"RECORD TYPE": "Building/Construction/Commercial/Remodel",
+"RECORD STATUS DATE": "2004-07-29T00:00:00.000",
+"BALANCE DUE": "0.0",
+"DATE CLOSED": "",
+"DATE COMPLETED": "",
+"RECORD STATUS": "Closed",
+"RECORD ID": "2004062845",
+"RECORD TYPE TYPE": "Construction",
+"STATUS": "Closed",
+"PARCEL NUMBER": "",
+"DATE STATUSED": "2004-07-29T00:00:00.000",
+"DESCRIPTION": "REPLACING CEILING PANELS  DRYWALL OVER WOOD PANEL",
+"_full_text": "'-06':3 '-07':11,25 '-24':4 '-29':12,26 '0.0':23 '00':6,14,28 '00.000':7,15,29 '2004':2,10,24 '2004062845':1 '3279':17 '33980':22 'build':8,37 'building/construction/commercial/remodel':16 'ceil':31 'cgc061346':42 'ch':43 'charlott':21 'close':9,41 'commerci':40 'construct':39 'contractor':45 'drywal':33 'general':44 'inc':46 'panel':32,36 'port':20 'rd':19 'remodel':38 'replac':30 'sherwood':18 't00':5,13,27 'wood':35",
+"RECORD MODULE": "Building",
+"ADDRESS": "3279 SHERWOOD RD, PORT CHARLOTTE 33980",
+"_id": 199079,
+"LICENSE NBR": "CGC061346"
+}
+],
+"fields": [
+{
+"type": "int4",
+"id": "_id"
+},
+{
+"type": "tsvector",
+"id": "_full_text"
+},
+{
+"type": "text",
+"id": "RECORD ID"
+},
+{
+"type": "text",
+"id": "DATE OPENED"
+},
+{
+"type": "text",
+"id": "RECORD MODULE"
+},
+{
+"type": "text",
+"id": "RECORD STATUS"
+},
+{
+"type": "text",
+"id": "RECORD STATUS DATE"
+},
+{
+"type": "text",
+"id": "RECORD TYPE"
+},
+{
+"type": "text",
+"id": "ADDRESS"
+},
+{
+"type": "text",
+"id": "BALANCE DUE"
+},
+{
+"type": "text",
+"id": "DATE CLOSED"
+},
+{
+"type": "text",
+"id": "DATE COMPLETED"
+},
+{
+"type": "text",
+"id": "DATE STATUSED"
+},
+{
+"type": "text",
+"id": "DESCRIPTION"
+},
+{
+"type": "text",
+"id": "RECORD TYPE GROUP"
+},
+{
+"type": "text",
+"id": "RECORD TYPE CATEGORY"
+},
+{
+"type": "text",
+"id": "RECORD TYPE TYPE"
+},
+{
+"type": "text",
+"id": "RECORD TYPE SUBTYPE"
+},
+{
+"type": "text",
+"id": "STATUS"
+},
+{
+"type": "text",
+"id": "PARCEL NUMBER"
+},
+{
+"type": "text",
+"id": "LICENSE NBR"
+},
+{
+"type": "text",
+"id": "BUSINESS NAME"
+}
+],
+"sql": "SELECT * FROM \"163d8400-3ffd-4739-82c9-8c2f58ecd923\" WHERE _id = '199079'"
+}
+}

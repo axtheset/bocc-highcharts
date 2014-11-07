@@ -1,0 +1,343 @@
+﻿<!DOCTYPE HTML>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>Highcharts Example</title>
+
+		<script type="text/javascript" src="assets/jquery-1.11.1.min.js"></script>
+
+	</head>
+	<body>
+
+
+
+<div id="containerLine" style="height: 400px"></div>
+<div id="containerStackedBar" style="height: 400px"></div>
+<div id="container" style="height: 400px"></div>
+
+
+<script src="assets/js/highcharts.js"></script>
+<script src="assets/js/highcharts-3d.js"></script>
+<script src="assets/js/modules/exporting.js"></script>
+
+		<script type="text/javascript">
+
+		 function requestJSON(url, callback) {
+          $.ajax({
+            url: url,
+            complete: function(xhr) {
+              callback.call(null, xhr.responseJSON);
+            },
+            error: function(xhr, status, error) {
+            	alert(xhr.status);
+            }
+          });
+        }
+
+	$(document).ready(function() {
+        
+		var civicDataSQLURL = "http://www.civicdata.com/api/action/datastore_search_sql?sql=";
+		var urlSingleFamily = civicDataSQLURL + encodeURIComponent("SELECT substring(\"DATE OPENED\" from 1 for 4) as Year, substring(\"DATE OPENED\" from 6 for 2) as Month, count(*) as Count from \"92c62bd0-64ea-48ed-b28b-6976fba03cde\" WHERE \"RECORD TYPE CATEGORY\" = 'Single Family' group by Year, Month order by Year, Month"); 
+		
+		requestJSON(urlSingleFamily, function(json) {
+			var records = json.result.records;
+			var theDate = new Date();
+			var fifthYearArray = [];
+			var fourthYearArray = [];
+			var thirdYearArray = [];
+			var secondYearArray = [];
+			var firstYearArray = [];
+			var currentYearArray = [];
+			var fifthYear = (theDate.getFullYear()-5);
+			var fourthYear = (theDate.getFullYear()-4);
+			var thirdYear = (theDate.getFullYear()-3);
+			var secondYear = (theDate.getFullYear()-2);
+			var firstYear = (theDate.getFullYear()-1);
+			var currentYear = (theDate.getFullYear());
+			for(var i=0; i<records.length; i++) {
+				if (records[i].year == fifthYear)
+					fifthYearArray.push(parseInt(records[i].count));
+				if (records[i].year == fourthYear)
+					fourthYearArray.push(parseInt(records[i].count));
+				if (records[i].year == thirdYear)
+					thirdYearArray.push(parseInt(records[i].count));
+				if (records[i].year == secondYear)
+					secondYearArray.push(parseInt(records[i].count));
+				if (records[i].year == firstYear)
+					firstYearArray.push(parseInt(records[i].count));
+				if (records[i].year == currentYear)
+					currentYearArray.push(parseInt(records[i].count));
+			}
+			$('#containerLine').highcharts({
+				title: {
+					text: 'Single Family Homes Permits',
+					x: -20 //center
+				},
+				subtitle: {
+					text: 'Past 5 Years',
+					x: -20
+				},
+				xAxis: {
+					categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+                		'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+		        },
+				yAxis: {
+					title: {
+						text: 'Number of Permits'
+					},
+					plotLines: [{
+						value: 0,
+						width: 1,
+						color: '#808080'
+					}]
+				},
+				tooltip: {
+					valueSuffix: ' issued',
+					crosshairs: true,
+					shared: true
+				},
+				legend: {
+					layout: 'vertical',
+					align: 'right',
+					verticalAlign: 'middle',
+					borderWidth: 0
+				},
+				series: [{
+					name: fifthYear,
+					data: fifthYearArray
+					}, {
+					name: fourthYear,
+					data: fourthYearArray
+					}, {
+					name: thirdYear,
+					data: thirdYearArray
+					}, {
+					name: secondYear,
+					data: secondYearArray
+					}, {
+					name: firstYear,
+					data: firstYearArray
+					}, {
+					name: currentYear,
+					data: currentYearArray
+				}]
+			});
+		});
+        
+		var urlPermitsByMonth = 'http://www.civicdata.com/api/action/datastore_search_sql?sql=SELECT%20substring%28%22DATE%20OPENED%22%20from%206%20for%202%29%20as%20Month,%20substring%28%22DATE%20OPENED%22%20from%201%20for%204%29%20as%20Year,%20%22RECORD%20TYPE%20TYPE%22%20as%20RecordType,%20%22RECORD%20TYPE%20SUBTYPE%22%20as%20RecordGroup,count%28*%29%20as%20Count%20from%20%2292c62bd0-64ea-48ed-b28b-6976fba03cde%22%20where%20%22DATE%20OPENED%22%20%3E=%20%272014-01-01%27%20and%20%22DATE%20OPENED%22%20%3C=%20%272014-12-31%27%20group%20by%20Month,%20Year,%20RecordGroup,%20RecordType%20order%20by%20Year,%20Month,%20RecordType'
+		requestJSON(urlPermitsByMonth, function(json) {
+			var records = json.result.records;
+			var tradeCounts = [];
+			var constrCounts = [];
+			var accCounts = [];
+			var ancCounts = [];
+			var spvCounts = [];
+			var posCounts = [];
+			var landCounts = [];
+			var subdryCounts = [];
+			var tradeCountsComm = [];
+			var constrCountsComm = [];
+			var accCountsComm = [];
+			var ancCountsComm = [];
+			var spvCountsComm = [];
+			var posCountsComm = [];
+			var landCountsComm = [];
+			var subdryCountsComm = [];
+			
+			for(var i=0; i<records.length; i++) {
+				if (records[i].recordtype == "Accessories" && records[i].recordgroup == "Residential")
+					accCounts.push(parseInt(records[i].count));
+				if (records[i].recordtype == "Construction" && records[i].recordgroup == "Residential")
+					constrCounts.push(parseInt(records[i].count));
+				if (records[i].recordtype == "Trade Permits" && records[i].recordgroup == "Residential")
+					tradeCounts.push(parseInt(records[i].count));
+/*				if (records[i].recordtype == "Ancillary" && records[i].recordgroup == "Residential")
+					ancCounts.push(parseInt(records[i].count));
+				if (records[i].recordtype == "SPV" && records[i].recordgroup == "Residential")
+					spvCounts.push(parseInt(records[i].count));
+				if (records[i].recordtype == "POS" && records[i].recordgroup == "Residential")
+					posCounts.push(parseInt(records[i].count));
+				if (records[i].recordtype == "Land Development" && records[i].recordgroup == "Residential")
+					landCounts.push(parseInt(records[i].count));
+				if (records[i].recordtype == "SUBDRY" && records[i].recordgroup == "Residential")
+					subdryCounts.push(parseInt(records[i].count));
+*/
+				if (records[i].recordtype == "Accessories" && records[i].recordgroup == "Commercial")
+					accCountsComm.push(parseInt(records[i].count));
+				if (records[i].recordtype == "Construction" && records[i].recordgroup == "Commercial")
+					constrCountsComm.push(parseInt(records[i].count));
+				if (records[i].recordtype == "Trade Permits" && records[i].recordgroup == "Commercial")
+					tradeCountsComm.push(parseInt(records[i].count));
+/*				if (records[i].recordtype == "Ancillary" && records[i].recordgroup == "Commercial")
+					ancCountsComm.push(parseInt(records[i].count));
+				if (records[i].recordtype == "SPV" && records[i].recordgroup == "Commercial")
+					spvCountsComm.push(parseInt(records[i].count));
+				if (records[i].recordtype == "POS" && records[i].recordgroup == "Commercial")
+					posCountsComm.push(parseInt(records[i].count));
+				if (records[i].recordtype == "Land Development" && records[i].recordgroup == "Commercial")
+					landCountsComm.push(parseInt(records[i].count));
+				if (records[i].recordtype == "SUBDRY" && records[i].recordgroup == "Commercial")
+					subdryCountsComm.push(parseInt(records[i].count));
+*/
+			}
+			$('#containerStackedBar').highcharts({
+				chart: {
+					type: 'column',
+					options3d: {
+						enabled: false,
+						alpha: 15,
+						beta: 15,
+						viewDistance: 25,
+						depth: 40
+					},
+					marginTop: 80,
+					marginRight: 40
+				},
+				title: {
+					text: 'Permits Generated by Month grouped by Type'
+				},
+				xAxis: {
+					categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+				},
+				yAxis: {
+					allowDecimals: false,
+					min: 0,
+					title: {
+						text: 'Permits Issued'
+					}
+				},
+				tooltip: {
+					headerFormat: '<b>{point.key}</b><br>',
+					pointFormat: '<span style="color:{series.color}">\u25CF</span> {series.name}: {point.y} / {point.stackTotal}'
+				},
+				plotOptions: {
+					column: {
+						stacking: 'normal',
+						depth: 40
+					}
+				},
+				series: [{
+					name: 'Residential Trade Permits',
+					data: tradeCounts,
+					stack: 'Residential'
+					}, {
+					name: 'Commercial Trade Permits',
+					data: tradeCountsComm,
+					stack: 'Commercial'
+					}, {
+					name: 'Residential Construction',
+					data: constrCounts,
+					stack: 'Residential'
+					}, {
+					name: 'Commercial Construction',
+					data: constrCountsComm,
+					stack: 'Commercial'
+					}, {
+					name: 'Residential Accessories',
+					data: accCounts,
+					stack: 'Residential'
+					}, {
+					name: 'Commercial Accessories',
+					data: accCountsComm,
+					stack: 'Commercial'
+/*					}, {
+					name: 'Residential Ancillary',
+					data: ancCounts,
+					stack: 'Residential'
+					}, {
+					name: 'Commercial Ancillary',
+					data: ancCountsComm,
+					stack: 'Commercial'
+					}, {
+					name: 'Residential SPV',
+					data: spvCounts,
+					stack: 'Residential'
+					}, {
+					name: 'Commercial SPV',
+					data: spvCountsComm,
+					stack: 'Commercial'
+					}, {
+					name: 'Residential POS',
+					data: posCounts,
+					stack: 'Residential'
+					}, {
+					name: 'Commercial POS',
+					data: posCountsComm,
+					stack: 'Commercial'
+					}, {
+					name: 'Residential Land Development',
+					data: landCounts,
+					stack: 'Residential'
+					}, {
+					name: 'Commercial Land Development',
+					data: landCountsComm,
+					stack: 'Commercial'
+					}, {
+					name: 'Residential SUBDRY',
+					data: subdryCounts,
+					stack: 'Residential'
+					}, {
+					name: 'Commercial SUBDRY',
+					data: subdryCountsComm,
+					stack: 'Commercial'
+*/
+				}]
+			});
+		});
+
+
+		function getDateFive() {
+			var fiveYears = new Date();
+			fiveYears.setTime(fiveYears.valueOf() - 5 * 365 * 24 * 60 * 60 * 1000);
+			var theNewDate = fiveYears.getFullYear() + "-" + (fiveYears.getMonth()+1) + "-" + fiveYears.getDay();
+			//alert(theNewDate);
+			return theNewDate;
+		}
+		
+		//var urlPie = 'http://www.civicdata.com/api/action/datastore_search_sql?sql=SELECT%20%22RECORD%20TYPE%20SUBTYPE%22%20as%20RecordType,%20count(*)%20as%20Count%20from%20%2292c62bd0-64ea-48ed-b28b-6976fba03cde%22%20group%20by%20RecordType%20order%20by%20Count%20desc';
+		//var urlPie = 'http://www.civicdata.com/api/action/datastore_search_sql?sql=SELECT%20%22RECORD%20TYPE%20SUBTYPE%22%20as%20RecordType,%20count(*)%20as%20Count%20from%20%2292c62bd0-64ea-48ed-b28b-6976fba03cde%22%20 WHERE "PERMIT STATUS DATE" >= DATE_ADD(LAST_DAY(DATE_SUB(NOW(), INTERVAL 2 MONTH)), INTERVAL 1 DAY) AND "PERMIT STATUS DATE" <= DATE_SUB(NOW(), INTERVAL 1 MONTH) group%20by%20RecordType%20order%20by%20Count%20desc';
+		var urlPie = 'http://www.civicdata.com/api/action/datastore_search_sql?sql=SELECT%20%22RECORD%20TYPE%20SUBTYPE%22%20as%20RecordType,%20count(*)%20as%20Count%20from%20%2292c62bd0-64ea-48ed-b28b-6976fba03cde%22%20 WHERE "PERMIT STATUS DATE" >= \'' + getDateFive() + '\' AND "PERMIT STATUS DATE" <= \'2014-11-5\' group%20by%20RecordType%20order%20by%20Count%20desc';
+		// Draw the bar chart.
+		requestJSON(urlPie, function(json) {
+			var records = json.result.records
+			var pieCounts = [];
+			for(var i=0; i<records.length; i++) {
+				pieCounts.push([records[i].recordtype,parseInt(records[i].count)]);
+			}
+			$('#container').highcharts({
+				chart: {
+					type: 'pie',
+					options3d: {
+						enabled: true,
+						alpha: 45,
+						beta: 0
+					}
+				},
+				title: {
+					text: 'Test Chart'
+				},
+				tooltip: {
+					pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+				},
+				plotOptions: {
+					pie: {
+						allowPointSelect: true,
+						cursor: 'pointer',
+						depth: 35,
+						dataLabels: {
+							enabled: true,
+							format: '{point.name}'
+						}
+					}
+				},
+				series: [{
+					type: 'pie',
+					name: 'testing',
+					data: pieCounts
+				}]
+			});
+		});
+	});
+		</script>
+	</body>
+</html>
